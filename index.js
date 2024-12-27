@@ -16,6 +16,14 @@ mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('Connexion à MongoDB réussie'))
   .catch((err) => console.log('Connexion à MongoDB échouée : ', err));
 
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/front/menu.html');
+})
+
+app.get('/editAnnonce/:id', (req, res) => {
+  res.sendFile(__dirname + '/front/editAnnonce.html');
+})
+
 app.post('/createAnnonce', [rateLimitMiddleware], async (req, res) => {
   try{
     const newAnnonce = new Annonce({
@@ -76,7 +84,7 @@ app.delete('/deleteAnnonce/:id', async (req, res) => {
     if (!deleteAnnonce){
       return res.status(404).send("Annonce non trouvée");
     }
-    res.status(200).send("Annonce supprimée avec succès");
+    res.status(200).json({success: true, message: "Annonce supprimée avec succès"});
   } catch(err){
     res.status(500).send("Erreur lors de la suppression de l'annonce : " + err);
   }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Annonces</h1>
+    
+    <section id="annonces"></section>
+
+    <p>Créer une annonce</p>
+    
+    <input type="text" id="title" placeholder="Title">
+    <textarea id="description" placeholder="Description"></textarea>
+    <input type="text" id="image" placeholder="Image">
+    <button id="createAnnonceButton">Créer</button>
+</body>
+
+<script>
+    const annonces = fetch('http://localhost:3000/allAnnonces')
+    .then(response => response.json())
+    .then(annonces => {
+        console.log(annonces);
+        annonces.forEach(annonce => {
+            const annonceElement = document.createElement('div');
+            annonceElement.innerHTML = `<a href="/editAnnonce/${annonce._id}">${annonce.title}</a>`;
+            document.getElementById('annonces').appendChild(annonceElement);
+        });
+    })
+    .catch(error => console.error("Erreur lors de la récupération des annonces :", error));
+
+    document.getElementById('createAnnonceButton').addEventListener('click', () => {
+        const annonce = {
+            title: document.getElementById('title').value,
+            description: document.getElementById('description').value,
+            image: document.getElementById('image').value
+        }
+        fetch('http://localhost:3000/createAnnonce', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(annonce)
+        })
+        .then(response => response.json())
+        .then(annonce => {
+            console.log(annonce);
+            window.location.reload();
+        })
+        .catch(error => console.error("Erreur lors de la création de l'annonce :", error));
+    })
+
+</script>
+</html>
