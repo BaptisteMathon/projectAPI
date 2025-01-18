@@ -4,53 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/front/css/menu.css">
 </head>
 <body>
     <h1>Annonces</h1>
     
+    <div class="add-annonces">
+        <h2>Créer une annonce</h2>
+        <input type="text" id="title" placeholder="Title">    
+        <textarea id="description" placeholder="Description"></textarea>
+        <input type="file" id="image">
+        <button id="createAnnonceButton">Créer l'annonce</button>
+    </div>
+
     <section id="annonces"></section>
 
-    <p>Créer une annonce</p>
     
-    <input type="text" id="title" placeholder="Title">
-    <textarea id="description" placeholder="Description"></textarea>
-    <input type="text" id="image" placeholder="Image">
-    <button id="createAnnonceButton">Créer</button>
+    
+    
 </body>
 
 <script>
-    const annonces = fetch('http://localhost:3000/allAnnonces')
-    .then(response => response.json())
-    .then(annonces => {
-        console.log(annonces);
-        annonces.forEach(annonce => {
-            const annonceElement = document.createElement('div');
-            annonceElement.innerHTML = `<a href="/editAnnonce/${annonce._id}">${annonce.title}</a>`;
-            document.getElementById('annonces').appendChild(annonceElement);
-        });
-    })
-    .catch(error => console.error("Erreur lors de la récupération des annonces :", error));
+    document.getElementById('createAnnonceButton').addEventListener('click', async () => {
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        const image = document.getElementById('image').files[0];
 
-    document.getElementById('createAnnonceButton').addEventListener('click', () => {
-        const annonce = {
-            title: document.getElementById('title').value,
-            description: document.getElementById('description').value,
-            image: document.getElementById('image').value
+        if (!title || !description || !image) {
+            alert("Veuillez remplir tous les champs et sélectionner une image.");
+            return;
         }
-        fetch('http://localhost:3000/createAnnonce', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(annonce)
-        })
-        .then(response => response.json())
-        .then(annonce => {
-            console.log(annonce);
-            window.location.reload();
-        })
-        .catch(error => console.error("Erreur lors de la création de l'annonce :", error));
-    })
 
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('image', image);
+
+        try {
+            const response = await fetch('http://localhost:3000/createAnnonce', {
+                method: 'POST',
+                body: formData,
+            });
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                console.error("Erreur lors de la création de l'annonce :", await response.text());
+            }
+        } catch (err) {
+            console.error("Erreur réseau :", err);
+        }
+    });
+
+    fetch('http://localhost:3000/allAnnonces')
+        .then(response => response.json())
+        .then(annonces => {
+            annonces.forEach(annonce => {
+                const annonceElement = document.createElement('div');
+                annonceElement.innerHTML = `
+                    <a href="/editAnnonce/${annonce._id}" style="justify-content: center">
+                        <h3>${annonce.title}</h3>
+                    </a>
+                    <img src="/uploads/${annonce.image}" alt="" style="width: 200px;">
+                    `;
+                annonceElement.style.display = "flex"
+                annonceElement.style.flexDirection = "column"
+                annonceElement.style.alignItems = "center"
+                annonceElement.style.background = "#c8c8c8"
+                annonceElement.style.margin = "25px 0"
+                annonceElement.style.padding = "25px"
+                annonceElement.style.width = "50%"
+                annonceElement.style.position = "relative"
+                annonceElement.style.left = "50%"
+                annonceElement.style.transform = "translateX(-50%)"
+                annonceElement.style.borderRadius = '10px'
+                document.getElementById('annonces').appendChild(annonceElement);
+            });
+        })
+        .catch(error => console.error("Erreur lors de la récupération des annonces :", error));
 </script>
 </html>

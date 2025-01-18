@@ -4,17 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/front/css/edit.css">
 </head>
 <body>
-    <h1>Edit Annonce</h1>
-    <input type="text" id="title" placeholder="Title">
-    <textarea id="description" placeholder="Description"></textarea>
-    <input type="text" id="image" placeholder="Image">
-    <button id="editAnnonceButton">Edit</button>
+    <a href="http://localhost:3000">HOME</a>
 
-    <br><br><br><br><br><br><br>
+    <div class="div-main">        
+        <input type="text" name="title" id="title">
+        <img src="#" alt="" id="image" width="500px">
+        <textarea id="description" placeholder="Description"></textarea>
+        <button id="editAnnonceButton">Edit</button>
+    </div>
 
-    <p>supprimer l'annonce</p>
+    <br><br><br><br><br>
+
     <button id="deleteAnnonceButton">Delete</button>
     
 
@@ -27,7 +30,7 @@
     .then(annonce => {
         document.getElementById('title').value = annonce.title;
         document.getElementById('description').value = annonce.description;
-        document.getElementById('image').value = annonce.image;
+        document.getElementById('image').src = '../uploads/' + annonce.image;
     })
     .catch(error => console.error("Erreur lors de la récupération de l'annonce : " + error));
 

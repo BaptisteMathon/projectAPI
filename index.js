@@ -4,17 +4,36 @@ const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const multer = require('multer');
+const path = require('path');
 dotenv.config();
 const Annonce = require('./models/annonces');
+const Image = require('./models/images')
 const rateLimitMiddleware = require('./midllewares/rateLimiter');
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/front', express.static(path.join(__dirname, 'front')));
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname)); // Ajouter un timestamp pour éviter les conflits
+  },
+});
+const upload = multer({ storage });
 
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('Connexion à MongoDB réussie'))
   .catch((err) => console.log('Connexion à MongoDB échouée : ', err));
+
+
+// ********************************************
+// GET :
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/front/menu.html');
@@ -22,20 +41,6 @@ app.get('/', (req, res) => {
 
 app.get('/editAnnonce/:id', (req, res) => {
   res.sendFile(__dirname + '/front/editAnnonce.html');
-})
-
-app.post('/createAnnonce', [rateLimitMiddleware], async (req, res) => {
-  try{
-    const newAnnonce = new Annonce({
-      title: req.body.title,
-      description: req.body.description,
-      image: req.body.image,
-    });
-    const savedAnnonce = await newAnnonce.save();
-    res.status(201).json(savedAnnonce);
-  } catch(err){
-    res.status(500).send("Erreur lors de la création de l'annonce : " + err);
-  }
 })
 
 app.get('/allAnnonces', async (req, res) => {
@@ -62,6 +67,29 @@ app.get('/getAnnonce/:id', async (req, res) => {
   }
 })
 
+
+// ********************************************
+// POST :
+
+app.post('/createAnnonce', upload.single('image'), async (req, res) => {
+  try {
+      const newAnnonce = new Annonce({
+          title: req.body.title,
+          description: req.body.description,
+          image: req.file.filename, 
+      });
+      const savedAnnonce = await newAnnonce.save();
+      res.status(201).json(savedAnnonce);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send("Erreur lors de la création de l'annonce : " + err);
+  }
+});
+
+
+// ********************************************
+// PUT :
+
 app.put('/updateAnnonce/:id', async (req, res) => {
   try{
     const updateAnnonce = await Annonce.findById(req.params.id);
@@ -78,6 +106,9 @@ app.put('/updateAnnonce/:id', async (req, res) => {
   }
 })
 
+// ********************************************
+// DELETE :
+
 app.delete('/deleteAnnonce/:id', async (req, res) => {
   try{
     const deleteAnnonce = await Annonce.findByIdAndDelete(req.params.id);
@@ -89,6 +120,8 @@ app.delete('/deleteAnnonce/:id', async (req, res) => {
     res.status(500).send("Erreur lors de la suppression de l'annonce : " + err);
   }
 })
+
+app.use('/uploads', express.static('uploads'));
 
 app.listen(process.env.PORT, () => {
   console.log(`Serveur en écoute sur le port http://localhost:${process.env.PORT}`);
