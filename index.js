@@ -8,8 +8,10 @@ const multer = require('multer');
 const path = require('path');
 dotenv.config();
 const Annonce = require('./models/annonces');
-const Image = require('./models/images')
-const rateLimitMiddleware = require('./midllewares/rateLimiter');
+const User = require('./models/user')
+const rateLimitMiddleware = require('./middlewares/rateLimiter');
+const authcontroller = require('./controllers/authcontroller');
+const authJwt = require('./middlewares/authJwt');
 
 app.use(cors());
 app.use(express.json());
@@ -31,6 +33,73 @@ mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('Connexion à MongoDB réussie'))
   .catch((err) => console.log('Connexion à MongoDB échouée : ', err));
 
+
+
+// ********************************************
+
+  app.get('/api/todos',[authJwt.verifyToken,authJwt.isExist],async (req,res)=>{
+    try{
+       const todos = await Todo.find();
+       const todoJson = JSON.stringify(todos);
+       res.json(todos);
+     }catch (err) {
+       res.status(500).send('Erreur lors de la récupération des tâches');
+     }   
+   })
+   app.post('/api/todos', [authJwt.verifyToken,authJwt.isExist],async (req, res) => {
+     if (!req.user.isAdmin) {
+       return res.status(403).send({ message: "Seulement pour Admin" });
+     }
+       try {
+         const newTodo = new Todo({
+           title: req.body.title,
+           completed: req.body.completed || false
+         });
+     
+         const savedTodo = await newTodo.save();
+         res.status(201).json(savedTodo);
+       } catch (err) {
+         res.status(500).send('Erreur lors de la création de la tâche');
+       }
+   });
+   app.get('/api/todos/:id', [authJwt.verifyToken,authJwt.isExist],async (req, res) => {
+       try {
+           const todo = await Todo.findById(req.params.id);
+           if (!todo) {
+             return res.status(404).send('Tâche non trouvée');
+           }
+           const todoJson = JSON.stringify(todo);
+           const hash = etag(todoJson);
+           if (req.headers['if-none-match'] === hash) {
+             return res.status(304).send(); // Pas de modifications, renvoyer 304 Not Modified
+           }
+           res.setHeader('ETag', hash);
+           res.status(200).json(todo);
+       }catch (err) {
+           res.status(500).send('Erreur lors de la création de la tâche');
+       }
+       
+   });
+   app.put('/api/todos/:id',[authJwt.verifyToken,authJwt.isExist], async (req, res) => {
+     if (!req.user.isAdmin) {
+       return res.status(403).send({ message: "Seulement pour Admin" });
+     }
+       const todo = await Todo.findById(req.params.id);
+       if (!todo) {
+           return res.status(404).send('Tâche non trouvée');
+       }
+       const clientETag = req.headers['if-match'];
+       const currentETag = etag(JSON.stringify(todo));
+       console.log(clientETag);
+       console.log(currentETag);
+       if (clientETag !== currentETag) {
+           return res.status(412).send('Precondition Failed: ETag mismatch'); // 412 Precondition Failed
+       }
+       todo.title = req.body.title || todo.title;
+       todo.completed = req.body.completed || todo.completed;
+       const updatedTodo = await todo.save();
+       res.status(200).json(updatedTodo);
+   });
 
 // ********************************************
 // GET :
@@ -121,8 +190,13 @@ app.delete('/deleteAnnonce/:id', async (req, res) => {
   }
 })
 
+app.post("/api/auth/signup", authcontroller.signup);
+app.post("/api/auth/signin",authcontroller.signin);
+app.post("/api/auth/signout",authcontroller.signout);
+
 app.use('/uploads', express.static('uploads'));
 
 app.listen(process.env.PORT, () => {
   console.log(`Serveur en écoute sur le port http://localhost:${process.env.PORT}`);
 });
+
