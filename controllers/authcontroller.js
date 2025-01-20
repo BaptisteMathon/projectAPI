@@ -42,11 +42,12 @@ exports.signin = async (req, res) => {
       nom: user.nom,
       email: user.email,
       accessToken: token,
+      message: "User was registered successfully!"
     });
-  };
+};
 
-  exports.signout = (req, res) => {
-    res.cookie('jwt', '', { maxAge: 1 }); // Deletes the cookie containing the token
+exports.signout = (req, res) => {
+    res.cookie('jwt', '', { maxAge: 1 }); 
     res.send({ message: 'Logged out successfully!' });
-  }
+}
   

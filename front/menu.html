@@ -48,7 +48,9 @@
             if (response.ok) {
                 window.location.reload();
             } else {
-                console.error("Erreur lors de la création de l'annonce :", await response.text());
+                const alert2 = await response.text()
+                alert(alert2)
+                console.error("Erreur lors de la création de l'annonce :", alert2);
             }
         } catch (err) {
             console.error("Erreur réseau :", err);
