@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oauth</title>
+</head>
+<body>
+    <h1>Connexion Oauth</h1>
+    <a href="/">Accueil</a>
+    <div id="loginDiv" style="display:none;">
+        <button id="login">Se connecter avec GitHub</button>
+        <button id="loginGoogle">Se connecter avec Google</button>
+    
+    
+        <div>
+            <h2>Connexion</h2>
+            <label for="email">Email : </label>
+            <input type="text" id="email">
+    
+            <label for="password">Mot de passe : </label>
+            <input type="password" id="password">
+            <button id="loginButton">Connexion</button>
+    
+        </div>
+    </div>
+
+    <div id="logoutDiv" style="display:none;">
+        <button id="logoutButton">Déconnexion</button>
+    </div>
+    
+
+    <script>
+
+        const token = localStorage.getItem("token");
+
+        
+        if (token === null || token == "null") {            
+            document.getElementById("loginDiv").style.display = "block";
+        } else {
+            document.getElementById("logoutDiv").style.display = "block";
+        }
+
+        const loginButton = document.getElementById("login");
+
+        loginButton.addEventListener("click", () => {
+            window.location.href = `https://github.com/login/oauth/authorize?client_id=Ov23li3SUKApmi3fo5Dm&redirect_uri=http://localhost:3000/api/oauth/redirect`; 
+        });
+
+        const loginGoogleButton = document.getElementById("loginGoogle");
+        loginGoogleButton.addEventListener("click", () => {
+            window.location.href = `https://accounts.google.com/o/oauth2/auth?client_id=222012251046-6kjei43u9cjnblnf1ce3naru360squu4.apps.googleusercontent.com&redirect_uri=http://localhost:3000/api/oauthGoogle/redirect&response_type=code&scope=email%20profile`; 
+        });
+
+        const login = document.getElementById("loginButton");
+        login.addEventListener("click", () => {
+            const data = {
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+            };
+            fetch("http://localhost:3000/api/auth/signin", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem("token", data.accessToken);
+                window.location.href = "/";                 
+            })
+            .catch(error => {
+                console.error("Erreur lors de la connexion:", error);
+            });
+        });
+
+        const logoutButton = document.getElementById("logoutButton")
+        logoutButton.addEventListener("click", () => {
+            fetch("http://localhost:3000/api/auth/signout", {
+                method: "POST"
+            })
+            .then(response => response.json())
+            .then(data => {
+                localStorage.removeItem("token");
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error("Erreur lors de la déconnexion:", error)
+            })
+            
+        });
+
+    </script>
+</body>
+</html>

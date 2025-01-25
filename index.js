@@ -34,74 +34,6 @@ mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('Connexion à MongoDB réussie'))
   .catch((err) => console.log('Connexion à MongoDB échouée : ', err));
 
-
-
-// ********************************************
-
-  // app.get('/api/todos',[authJwt.verifyToken,authJwt.isExist],async (req,res)=>{
-  //   try{
-  //      const todos = await Todo.find();
-  //      const todoJson = JSON.stringify(todos);
-  //      res.json(todos);
-  //    }catch (err) {
-  //      res.status(500).send('Erreur lors de la récupération des tâches');
-  //    }   
-  //  })
-  //  app.post('/api/todos', [authJwt.verifyToken,authJwt.isExist],async (req, res) => {
-  //    if (!req.user.isAdmin) {
-  //      return res.status(403).send({ message: "Seulement pour Admin" });
-  //    }
-  //      try {
-  //        const newTodo = new Todo({
-  //          title: req.body.title,
-  //          completed: req.body.completed || false
-  //        });
-     
-  //        const savedTodo = await newTodo.save();
-  //        res.status(201).json(savedTodo);
-  //      } catch (err) {
-  //        res.status(500).send('Erreur lors de la création de la tâche');
-  //      }
-  //  });
-  //  app.get('/api/todos/:id', [authJwt.verifyToken,authJwt.isExist],async (req, res) => {
-  //      try {
-  //          const todo = await Todo.findById(req.params.id);
-  //          if (!todo) {
-  //            return res.status(404).send('Tâche non trouvée');
-  //          }
-  //          const todoJson = JSON.stringify(todo);
-  //          const hash = etag(todoJson);
-  //          if (req.headers['if-none-match'] === hash) {
-  //            return res.status(304).send(); // Pas de modifications, renvoyer 304 Not Modified
-  //          }
-  //          res.setHeader('ETag', hash);
-  //          res.status(200).json(todo);
-  //      }catch (err) {
-  //          res.status(500).send('Erreur lors de la création de la tâche');
-  //      }
-       
-  //  });
-  //  app.put('/api/todos/:id',[authJwt.verifyToken,authJwt.isExist], async (req, res) => {
-  //    if (!req.user.isAdmin) {
-  //      return res.status(403).send({ message: "Seulement pour Admin" });
-  //    }
-  //      const todo = await Todo.findById(req.params.id);
-  //      if (!todo) {
-  //          return res.status(404).send('Tâche non trouvée');
-  //      }
-  //      const clientETag = req.headers['if-match'];
-  //      const currentETag = etag(JSON.stringify(todo));
-  //      console.log(clientETag);
-  //      console.log(currentETag);
-  //      if (clientETag !== currentETag) {
-  //          return res.status(412).send('Precondition Failed: ETag mismatch'); // 412 Precondition Failed
-  //      }
-  //      todo.title = req.body.title || todo.title;  
-  //      todo.completed = req.body.completed || todo.completed;
-  //      const updatedTodo = await todo.save();
-  //      res.status(200).json(updatedTodo);
-  //  });
-
 // ********************************************
 // GET :
 
@@ -111,6 +43,14 @@ app.get('/', (req, res) => {
 
 app.get('/editAnnonce/:id', (req, res) => {
   res.sendFile(__dirname + '/front/editAnnonce.html');
+})
+
+app.get('/Oauth', (req, res) => {
+  res.sendFile(__dirname + '/front/Oauth.html');
+})
+
+app.get('/test', (req, res) => {
+  res.sendFile(__dirname + '/front/test.html');
 })
 
 app.get('/allAnnonces', [authJwt.verifyToken,authJwt.isExist], async (req, res) => {
@@ -153,35 +93,35 @@ app.get('/getAnnonce/:id', [authJwt.verifyToken,authJwt.isExist], async (req, re
 // ********************************************
 // POST :
 
-// app.post('/createAnnonce', upload.single('image'), [authJwt.verifyToken,authJwt.isExist, rateLimitMiddleware], async (req, res) => {
-//   try {
-//       const newAnnonce = new Annonce({
-//           title: req.body.title,
-//           description: req.body.description,
-//           image: req.file.filename, 
-//       });
-//       const savedAnnonce = await newAnnonce.save();
-//       res.status(201).json(savedAnnonce);
-//   } catch (err) {
-//       console.error(err);
-//       res.status(500).send("Erreur lors de la création de l'annonce : " + err);
-//   }
-// });
+app.post('/createAnnonce', upload.single('image'), [authJwt.verifyToken,authJwt.isExist, rateLimitMiddleware], async (req, res) => {
+  try {
+      const newAnnonce = new Annonce({
+          title: req.body.title,
+          description: req.body.description,
+          image: req.file.filename, 
+      });
+      const savedAnnonce = await newAnnonce.save();
+      res.status(201).json(savedAnnonce);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send("Erreur lors de la création de l'annonce : " + err);
+  }
+});
 
-app.post('/createAnnonce', [authJwt.verifyToken,authJwt.isExist, rateLimitMiddleware], async (req, res) => {
-    try {
-        const newAnnonce = new Annonce({
-            title: req.body.title,
-            description: req.body.description,
-            image: req.body.image, 
-        });
-        const savedAnnonce = await newAnnonce.save();
-        res.status(201).json(savedAnnonce);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Erreur lors de la création de l'annonce : " + err);
-    }
-  });
+// app.post('/createAnnonce', [authJwt.verifyToken,authJwt.isExist, rateLimitMiddleware], async (req, res) => {
+//     try {
+//         const newAnnonce = new Annonce({
+//             title: req.body.title,
+//             description: req.body.description,
+//             image: req.body.image, 
+//         });
+//         const savedAnnonce = await newAnnonce.save();
+//         res.status(201).json(savedAnnonce);
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).send("Erreur lors de la création de l'annonce : " + err);
+//     }
+//   });
 
 // ********************************************
 // PUT :
@@ -194,8 +134,8 @@ app.put('/updateAnnonce/:id',[authJwt.verifyToken,authJwt.isExist],  async (req,
     }
     const clientEtag = req.headers['if-match']
     const currentEtag = etag(JSON.stringify(updateAnnonce))
-    console.log(clientEtag)
-    console.log(currentEtag)
+    console.log("clientEtag : ", clientEtag)
+    console.log("currentEtag : ", currentEtag)
     if(clientEtag !== currentEtag){
       return res.status(412).send('Precondition Failed: Etag mismatch')
     }
@@ -227,6 +167,8 @@ app.delete('/deleteAnnonce/:id', [authJwt.verifyToken,authJwt.isExist], async (r
 app.post("/api/auth/signup", authcontroller.signup);
 app.post("/api/auth/signin",authcontroller.signin);
 app.post("/api/auth/signout",authcontroller.signout);
+app.get('/api/oauth/redirect', authcontroller.oauth2Redirect);
+app.get('/api/oauthGoogle/redirect', authcontroller.googleOAuthRedirect);
 
 app.use('/uploads', express.static('uploads'));
 

@@ -8,13 +8,18 @@
 </head>
 <body>
     <h1>Annonces</h1>
+    <a href="/Oauth" id="oauthhh"></a>
     
-    <div class="add-annonces">
+    <div class="add-annonces" id="WhenConnected">
         <h2>Créer une annonce</h2>
         <input type="text" id="title" placeholder="Title">    
         <textarea id="description" placeholder="Description"></textarea>
         <input type="file" id="image">
         <button id="createAnnonceButton">Créer l'annonce</button>
+    </div>
+
+    <div id="WhenNotConnected" >
+        <p>Veuillez vous connecter pour voir les différentes annonces.</p>
     </div>
 
     <section id="annonces"></section>
@@ -25,6 +30,34 @@
 </body>
 
 <script>
+
+    let token = ""
+
+    function getTokenULR(){
+        const params = new URLSearchParams(window.location.search)
+        return params.get("token")
+    }
+
+
+    console.log(localStorage.getItem("token"))
+    if (localStorage.getItem("token") == "null" || localStorage.getItem("token") == null){
+        token = getTokenULR()  
+        console.log("toeknnnnnn: ", token)      
+        localStorage.setItem("token", token)
+    } else {
+        token = localStorage.getItem("token")
+        console.log("toeknnnnnnzzzzzzzzzzz: ", token)      
+    }
+
+    console.log("toekn: ", token)
+    if (token == "null" || token == null) {
+        document.getElementById("oauthhh").innerHTML = "Se connecter";
+        document.getElementById("WhenConnected").style.display = "none";
+    } else {        
+        document.getElementById("oauthhh").innerHTML = "Se déconnecter";
+        document.getElementById("WhenNotConnected").style.display = "none";
+    }
+
     document.getElementById('createAnnonceButton').addEventListener('click', async () => {
         const title = document.getElementById('title').value;
         const description = document.getElementById('description').value;
@@ -43,7 +76,10 @@
         try {
             const response = await fetch('http://localhost:3000/createAnnonce', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    "x-access-token": token
+                },
+                body: formData                
             });
             if (response.ok) {
                 window.location.reload();
@@ -57,9 +93,15 @@
         }
     });
 
-    fetch('http://localhost:3000/allAnnonces')
+    fetch('http://localhost:3000/allAnnonces', {
+        headers: {
+            "Content-Type": "application/json",
+            "x-access-token": token
+        }
+    })
         .then(response => response.json())
         .then(annonces => {
+            console.log(localStorage.getItem("token"))
             annonces.forEach(annonce => {
                 const annonceElement = document.createElement('div');
                 annonceElement.innerHTML = `

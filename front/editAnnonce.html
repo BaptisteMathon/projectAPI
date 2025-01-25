@@ -25,8 +25,18 @@
 
 <script>
     const annonceId = window.location.pathname.split('/').pop();
-    const uniqueAnnonce = fetch(`http://localhost:3000/getAnnonce/${annonceId}`)
-    .then(response => response.json())
+    let currentEtag = ""
+
+    const uniqueAnnonce = fetch(`http://localhost:3000/getAnnonce/${annonceId}`, {
+        headers: {
+            "Content-Type": "application/json",
+            "x-access-token": localStorage.getItem("token")
+        }
+    })
+    .then(response => {
+        currentEtag = response.headers.get('ETag')
+        return response.json()
+    })
     .then(annonce => {
         document.getElementById('title').value = annonce.title;
         document.getElementById('description').value = annonce.description;
@@ -43,7 +53,9 @@
         fetch(`http://localhost:3000/updateAnnonce/${annonceId}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                "x-access-token": localStorage.getItem("token"),
+                "If-Match": currentEtag
             },
             body: JSON.stringify(annonce)
         })
@@ -56,7 +68,11 @@
 
     document.getElementById('deleteAnnonceButton').addEventListener('click', () => {
         fetch(`http://localhost:3000/deleteAnnonce/${annonceId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json",
+                "x-access-token": localStorage.getItem("token")
+            }
         })
         .then(response => response.json())
         .then(annonce => {
