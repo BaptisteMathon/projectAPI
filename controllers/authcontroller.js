@@ -14,7 +14,23 @@ exports.signup = async (req, res) => {
     });
     try {
       await user.save();
-      res.send({ message: "User was registered successfully!" });
+
+      const token = jwt.sign({ id: user.id,email:user.email },
+        config.secret,
+        {
+          algorithm: 'HS256',
+          allowInsecureKeySizes: true,
+          expiresIn: 86400, // 24 hours
+        });
+
+      res.status(200).send({
+        id: user._id,
+        prenom: user.prenom,
+        nom: user.nom,
+        email: user.email,
+        accessToken: token,
+        message: "User was registered successfully!"
+      });
     } catch (err) {
       console.log(err);
       res.status(500).send("Erreur lors de la création de compte");

@@ -71,6 +71,21 @@ app.get('/allAnnonces', [authJwt.verifyToken,authJwt.isExist], async (req, res) 
   }
 })
 
+app.get('/allUsers', async (req, res) => {
+  try{
+    const allUsers = await User.find();
+    const allUsersJson = JSON.stringify(allUsers);
+    const hash = etag(allUsersJson);
+    if(req.headers['if-none-match'] === hash){
+      return res.status(304).send()
+    }
+    res.setHeader('Etag', hash)
+    res.status(200).json(allUsers);
+  } catch(err){
+    res.status(500).send("Erreur lors de la récupération des annonces : " + err);
+  }
+})
+
 app.get('/getAnnonce/:id', [authJwt.verifyToken,authJwt.isExist], async (req, res) => {
   try{
     const annonce = await Annonce.findById(req.params.id)
