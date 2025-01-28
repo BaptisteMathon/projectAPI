@@ -164,7 +164,7 @@
                     if(!document.getElementById("prenom").value && !document.getElementById("nom").value && !document.getElementById("email2").value && !document.getElementById("password2").value){
                         alert("Veuillez renseigner tous les champs")
                     } else {
-                        console.log(data)
+                        
 
                         fetch("http://localhost:3000/api/auth/signup", {
                             method: "POST",

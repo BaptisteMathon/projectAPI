@@ -39,7 +39,6 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
-    console.log(req.body.email)
     let passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
   
     if (!passwordIsValid) {
@@ -101,8 +100,7 @@ exports.oauth2Redirect = async (req, res) => {
       url: "https://api.github.com/user",
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-
-    console.log("data : ", userData.data)    
+  
 
     const { login, name} = userData.data;
 

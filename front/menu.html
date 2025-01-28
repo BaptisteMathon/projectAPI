@@ -39,17 +39,17 @@
     }
 
 
-    console.log(localStorage.getItem("token"))
+    
     if (localStorage.getItem("token") == "null" || localStorage.getItem("token") == null){
         token = getTokenULR()  
-        console.log("toeknnnnnn: ", token)      
+             
         localStorage.setItem("token", token)
     } else {
         token = localStorage.getItem("token")
-        console.log("toeknnnnnnzzzzzzzzzzz: ", token)      
+           
     }
 
-    console.log("toekn: ", token)
+    
     if (token == "null" || token == null) {
         document.getElementById("oauthhh").innerHTML = "Se connecter";
         document.getElementById("WhenConnected").style.display = "none";
@@ -101,7 +101,7 @@
     })
         .then(response => response.json())
         .then(annonces => {
-            console.log(localStorage.getItem("token"))
+            
             annonces.forEach(annonce => {
                 const annonceElement = document.createElement('div');
                 annonceElement.innerHTML = `

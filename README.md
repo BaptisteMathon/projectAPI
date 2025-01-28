@@ -2,6 +2,11 @@
 
 Réalisé par Baptiste Mathon et Lucas Chabel
 
+Présentation des auteurs:
+    -Annonces : Baptiste 
+    -User : Lucas
+    -Oauth : Baptiste & Lucas
+
 Description
 
 Cette application permet aux utilisateurs de gérer des annonces. Elle inclut les fonctionnalités suivantes :
@@ -54,29 +59,16 @@ Suivez les étapes ci-dessous pour configurer et exécuter l'application en loca
 
 1. Clonez le dépôt
 
-git clone <URL_DU_DEPOT>
-cd <NOM_DU_DOSSIER>
+git clone https://github.com/BaptisteMathon/projectAPI.git
+cd projectAPI
 
 2. Installez les dépendances
 
-npm install
+npm install express mongoose jsonwebtoken bcryptjs dotenv cors etag path express-rate-limiter multer crypto axios nodemon
 
 3. Configurez les variables d'environnement
 
-Créez un fichier .env à la racine du projet avec les variables suivantes :
-
-PORT=3000
-MONGO_URI=mongodb://localhost:27017/nom_de_votre_base
-JWT_SECRET=une_chaine_secrete_pour_le_jwt
-AUTH0_DOMAIN=votre-domaine-auth0
-AUTH0_CLIENT_ID=client-id-auth0
-AUTH0_CLIENT_SECRET=client-secret-auth0
-GOOGLE_CLIENT_ID=client-id-google
-GOOGLE_CLIENT_SECRET=client-secret-google
-TWITTER_CLIENT_ID=client-id-twitter
-TWITTER_CLIENT_SECRET=client-secret-twitter
-GITHUB_CLIENT_ID=client-id-github
-GITHUB_CLIENT_SECRET=client-secret-github
+Créez un fichier .env à la racine du projet avec les variables données dans le mail pour raison de sécurité.
 
 4. Lancez MongoDB
 
@@ -98,7 +90,7 @@ Vérifiez que l'email utilisé est unique.
 
 2. Authentification utilisateur
 
-Connectez-vous avec vos identifiants via /login ou utilisez un des boutons OAuth2 (Google, Twitter, GitHub).
+Connectez-vous avec vos identifiants via /login ou utilisez un des boutons OAuth2 (Google, GitHub).
 
 3. Gestion des annonces
 
@@ -113,7 +105,3 @@ Consulter les annonces : Rendez-vous sur /ads pour voir la liste ou /ads/:id pou
 4. Déconnexion
 
 Cliquez sur le bouton "Déconnexion" pour terminer votre session.
-
-Contribution
-
-Les contributions sont les bienvenues ! Veuillez ouvrir une "issue" ou soumettre une "pull request" avec vos suggestions ou corrections.

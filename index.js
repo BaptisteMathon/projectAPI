@@ -149,8 +149,6 @@ app.put('/updateAnnonce/:id',[authJwt.verifyToken,authJwt.isExist],  async (req,
     }
     const clientEtag = req.headers['if-match']
     const currentEtag = etag(JSON.stringify(updateAnnonce))
-    console.log("clientEtag : ", clientEtag)
-    console.log("currentEtag : ", currentEtag)
     if(clientEtag !== currentEtag){
       return res.status(412).send('Precondition Failed: Etag mismatch')
     }

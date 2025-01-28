@@ -60,8 +60,7 @@
             body: JSON.stringify(annonce)
         })
         .then(response => response.json())
-        .then(annonce => {
-            console.log(annonce);
+        .then(annonce => {            
         })
         .catch(error => console.error("Erreur lors de la mise à jour de l'annonce : " + error));
     })
@@ -76,7 +75,6 @@
         })
         .then(response => response.json())
         .then(annonce => {
-            console.log(annonce);
             window.location.href = '/';
         })
         .catch(error => console.error("Erreur lors de la suppression de l'annonce : " + error));
