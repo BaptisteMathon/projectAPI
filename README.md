@@ -3,9 +3,13 @@
 Réalisé par Baptiste Mathon et Lucas Chabel
 
 Présentation des auteurs:
+
     -Annonces : Baptiste 
+    
     -User : Lucas
+    
     -Oauth : Baptiste & Lucas
+    
 
 Description
 
@@ -58,13 +62,17 @@ Installation et configuration
 Suivez les étapes ci-dessous pour configurer et exécuter l'application en local :
 
 1. Clonez le dépôt
-
+   
+```
 git clone https://github.com/BaptisteMathon/projectAPI.git
+
 cd projectAPI
+```
 
 2. Installez les dépendances
-
+```
 npm install express mongoose jsonwebtoken bcryptjs dotenv cors etag path express-rate-limiter multer crypto axios nodemon
+```
 
 3. Configurez les variables d'environnement
 
@@ -78,7 +86,7 @@ Assurez-vous que votre instance MongoDB est en cours d'exécution.
 
 npm start
 
-Le serveur sera accessible sur http://localhost:3000.
+Le serveur sera accessible sur ``` http://localhost:3000 ```.
 
 Utilisation
 
